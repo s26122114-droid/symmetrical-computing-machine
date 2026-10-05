@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>喵喵的前端修練之旅 🐾</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            macaron: {
+              pink: '#FFB7B2',
+              yellow: '#FFE082',
+              green: '#B2F2BB',
+              blue: '#AEC6CF',
+              purple: '#E1BEE7',
+              cream: '#FFF9F0',
+              text: '#5D4037',
+              darkPink: '#FF8A80',
+            }
+          },
+          fontFamily: {
+            cute: ['"Mochiy Pop One"', '"Fredoka"', '"Noto Sans TC"', 'sans-serif'],
+          },
+          boxShadow: {
+            'clay': '8px 8px 16px #e6d3c2, -8px -8px 16px #ffffff, inset 2px 2px 4px rgba(255,255,255,0.8)',
+            'clay-active': '12px 12px 20px #d8c2b0, -8px -8px 16px #ffffff, inset 3px 3px 6px rgba(255,255,255,0.9)',
+            'clay-locked': '4px 4px 10px #e0d0c0, -4px -4px 10px #ffffff',
+            'clay-btn': '0 10px 0 #F48FB1, 0 15px 20px rgba(0,0,0,0.1)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FFF9F0;
+      font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+      color: #5D4037;
+      overflow-x: hidden;
+    }
+
+    /* 浮動氣泡背景 */
+    .bg-bubbles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: rgba(255, 183, 178, 0.25);
+      border-radius: 50%;
+      animation: floatUp 12s infinite linear;
+    }
+
+    .bubble:nth-child(2n) {
+      background: rgba(178, 242, 187, 0.25);
+      animation-duration: 15s;
+      animation-delay: 2s;
+    }
+
+    .bubble:nth-child(3n) {
+      background: rgba(255, 224, 130, 0.3);
+      animation-duration: 10s;
+      animation-delay: 4s;
+    }
+
+    .bubble:nth-child(4n) {
+      background: rgba(174, 198, 207, 0.25);
+      animation-duration: 18s;
+      animation-delay: 1s;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-120vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Q 彈 Bounce 與 Jelly 動畫 */
+    @keyframes jelly {
+      0% { transform: scale(1, 1); }
+      30% { transform: scale(1.15, 0.85); }
+      40% { transform: scale(0.9, 1.1); }
+      50% { transform: scale(1.05, 0.95); }
+      65% { transform: scale(0.98, 1.02); }
+      75% { transform: scale(1.02, 0.98); }
+      100% { transform: scale(1, 1); }
+    }
+
+    .jelly-hover:hover {
+      animation: jelly 0.7s ease-in-out;
+    }
+
+    /* 鎖定按鈕 Wiggle 動畫 */
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-4deg) scale(0.98); }
+      75% { transform: rotate(4deg) scale(0.98); }
+    }
+
+    .wiggle-hover:hover {
+      animation: wiggle 0.3s ease-in-out infinite;
+    }
+
+    /* 浮動大頭貼翅膀 / 星星 */
+    @keyframes floatSparkle {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(10deg); }
+    }
+
+    .sparkle-anim {
+      animation: floatSparkle 2.5s ease-in-out infinite;
+    }
+
+    /* 自訂卡片與按鈕的圓潤軟糖感 */
+    .clay-card {
+      background: #FFFFFF;
+      border-radius: 28px;
+      border: 4px solid #FFF3E0;
+    }
+
+    /* 愛心/星光特效容器 */
+    .sparkle-particle {
+      position: absolute;
+      pointer-events: none;
+      animation: popSparkle 0.6s ease-out forwards;
+    }
+
+    @keyframes popSparkle {
+      0% { transform: scale(0) translate(0, 0); opacity: 1; }
+      100% { transform: scale(1.4) translate(var(--tw-translate-x), var(--tw-translate-y)); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-between select-none">
+
+  <div class="bg-bubbles">
+    <div class="bubble w-12 h-12 left-[10%]"></div>
+    <div class="bubble w-20 h-20 left-[25%]"></div>
+    <div class="bubble w-16 h-16 left-[45%]"></div>
+    <div class="bubble w-24 h-24 left-[65%]"></div>
+    <div class="bubble w-10 h-10 left-[85%]"></div>
+    <div class="bubble w-14 h-14 left-[95%]"></div>
+  </div>
+
+  <main class="w-full max-w-5xl flex flex-col items-center">
+    
+    <header class="clay-card shadow-clay w-full p-6 sm:p-8 mb-8 text-center relative overflow-hidden flex flex-col items-center">
+      <!-- 裝飾小角塊 -->
+      <div class="absolute -top-6 -left-6 w-16 h-16 bg-macaron-pink/40 rounded-full blur-md"></div>
+      <div class="absolute -bottom-6 -right-6 w-20 h-20 bg-macaron-yellow/50 rounded-full blur-md"></div>
+
+      <!-- 大頭貼區域與浮動小翅膀/星星 -->
+      <div class="relative mb-4 group cursor-pointer">
+        <div class="absolute -top-3 -left-4 text-2xl sparkle-anim text-amber-400">✨</div>
+        <div class="absolute -bottom-2 -right-3 text-2xl sparkle-anim text-pink-400" style="animation-delay: 1s;">🌸</div>
+        <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-md overflow-hidden bg-macaron-pink/20 flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
+          <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=NekoCraft&backgroundColor=ffb7b2" alt="個人大頭貼" class="w-full h-full object-cover">
+        </div>
+        <span class="absolute bottom-0 right-1 bg-macaron-yellow text-xs font-bold px-2 py-0.5 rounded-full border-2 border-white shadow">
+          LV.16 🐾
+        </span>
+      </div>
+
+      <!-- 標題與簡介 -->
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-stone-700 tracking-wide font-cute mb-2 flex items-center justify-center gap-2">
+        <span>喵喵的前端修練之旅</span>
+        <span class="text-pink-400 animate-bounce">🐾</span>
+      </h1>
+      <p class="text-stone-500 font-medium text-sm sm:text-base max-w-md bg-macaron-cream/80 px-4 py-1.5 rounded-full border border-orange-100">
+        ✨ 收集每一關的闖關寶石，成為獨當一面的網頁大師！ ✨
+      </p>
+
+      <div class="w-full max-w-md mt-6 bg-orange-50 p-3.5 rounded-2xl border-2 border-orange-100">
+        <div class="flex justify-between items-center mb-2 px-1">
+          <span class="text-xs sm:text-sm font-bold text-stone-600 flex items-center gap-1">
+            <i class="fa-solid fa-trophy text-amber-400"></i> 闖關進度
+          </span>
+          <span class="text-xs sm:text-sm font-bold text-pink-500 bg-pink-100 px-2.5 py-0.5 rounded-full">
+            2 / 16 關 🐾
+          </span>
+        </div>
+        <!-- 進度條軌道 -->
+        <div class="w-full h-4 bg-stone-200/60 rounded-full overflow-hidden p-0.5 shadow-inner">
+          <div class="h-full bg-gradient-to-r from-macaron-pink to-macaron-yellow rounded-full transition-all duration-1000 ease-out relative" style="width: 12.5%;">
+            <div class="absolute right-0 top-0 bottom-0 w-2 bg-white/50 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+
+      <!-- Week 1 (已解鎖) -->
+      <a href="w1/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 border-pink-200" onclick="createSparkles(event)">
+        <div class="absolute top-0 right-0 bg-macaron-pink text-white text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
+          UNLOCKED 🌟
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-12 h-12 rounded-2xl bg-pink-100 text-pink-500 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
+            💳
+          </div>
+          <div>
+            <span class="text-xs font-bold text-pink-400 block tracking-wider">WEEK 01</span>
+            <h3 class="text-base font-bold text-stone-700 group-hover:text-pink-500 transition-colors">數位名片</h3>
+          </div>
+        </div>
+        <p class="text-xs text-stone-400 mb-4 line-clamp-1">打造屬於自己的第一張 Q 彈個人名片！</p>
+        <div class="flex justify-between items-center pt-2 border-t border-orange-50">
+          <span class="text-xs font-bold text-pink-500 flex items-center gap-1">
+            進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+          </span>
+          <span class="text-lg">✨</span>
+        </div>
+      </a>
+
+      <!-- Week 2 (已解鎖) -->
+      <a href="w2/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 border-amber-200" onclick="createSparkles(event)">
+        <div class="absolute top-0 right-0 bg-macaron-yellow text-stone-700 text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
+          UNLOCKED 🌟
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-500 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
+            🍱
+          </div>
+          <div>
+            <span class="text-xs font-bold text-amber-500 block tracking-wider">WEEK 02</span>
+            <h3 class="text-base font-bold text-stone-700 group-hover:text-amber-600 transition-colors">今天吃甚麼?</h3>
+          </div>
+        </div>
+        <p class="text-xs text-stone-400 mb-4 line-clamp-1">選擇困難症救星！隨機午餐轉盤～</p>
+        <div class="flex justify-between items-center pt-2 border-t border-orange-50">
+          <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
+            進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+          </span>
+          <span class="text-lg">🍣</span>
+        </div>
+      </a>
+
+      <!-- 生成 Week 3 ~ 16 未解鎖關卡 -->
+      <script>
+        // 關卡標題範例，讓整體更有故事感
+        const weekTitles = [
+          "Week 3 - 魔法計數器 🪄", "Week 4 - 奇幻待辦清單 📝", "Week 5 - 可愛計算機 🧮",
+          "Week 6 - 天氣小包包 ☁️", "Week 7 - 喵喵畫板 🎨", "Week 8 - 音樂隨身聽 🎵",
+          "Week 9 - 記憶對對碰 🃏", "Week 10 - 電影搜尋器 🎬", "Week 11 - 貪吃蛇大冒險 🐍",
+          "Week 12 - 秘密日記本 📖", "Week 13 - 購物小車車 🛒", "Week 14 - 冒險地圖 🗺️",
+          "Week 15 - 幸福計時器 ⏳", "Week 16 - 終極大魔王 🏰"
+        ];
+
+        for (let i = 3; i <= 16; i++) {
+          const title = weekTitles[i - 3] || `Week ${i} - 未知關卡`;
+          document.write(`
+            <div class="group relative clay-card p-5 shadow-clay-locked opacity-75 hover:opacity-100 transition-all duration-200 wiggle-hover cursor-not-allowed border-2 border-dashed border-stone-200 flex flex-col justify-between">
+              
+              <!-- Hover 提示 Tooltip -->
+              <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-stone-700 text-white text-xs px-3 py-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 flex items-center gap-1">
+                <span>🔑 尚未解鎖呦！</span>
+                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-700"></div>
+              </div>
+
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-400 flex items-center justify-center text-xl shadow-inner">
+                  🔒
+                </div>
+                <div>
+                  <span class="text-xs font-bold text-stone-400 block tracking-wider">WEEK ${i < 10 ? '0' + i : i}</span>
+                  <h3 class="text-base font-bold text-stone-500">${title.split(' - ')[1]}</h3>
+                </div>
+              </div>
+              <p class="text-xs text-stone-400 mb-4">努力修建中，敬請期待喵～</p>
+              <div class="flex justify-between items-center pt-2 border-t border-stone-100">
+                <span class="text-xs font-bold text-stone-400 flex items-center gap-1">
+                  <i class="fa-solid fa-lock text-xs"></i> 鎖定中
+                </span>
+                <span class="text-xs text-stone-300 font-mono">LOCKED</span>
+              </div>
+            </div>
+          `);
+        }
+      </script>
+
+    </section>
+  </main>
+
+  <footer class="mt-12 text-center text-stone-400 text-xs sm:text-sm font-medium flex flex-col items-center gap-1">
+    <p class="flex items-center gap-1">
+      Made with <span class="text-pink-400 animate-pulse">💖</span> and Paw Power 🐾
+    </p>
+    <p class="text-stone-300">© 2026 喵喵的前端修練日記 All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    // 點擊解鎖按鈕時飄出愛心與星光
+    function createSparkles(e) {
+      const sparkles = ['✨', '💖', '🌸', '⭐', '🐾'];
+      for (let i = 0; i < 6; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.className = 'sparkle-particle text-lg';
+        sparkle.innerText = sparkles[Math.floor(Math.random() * sparkles.length)];
+        
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        
+        const translateX = (Math.random() - 0.5) * 80;
+        const translateY = (Math.random() - 0.5) * 80 - 20;
+        
+        sparkle.style.setProperty('--tw-translate-x', `${translateX}px`);
+        sparkle.style.setProperty('--tw-translate-y', `${translateY}px`);
+        
+        e.currentTarget.appendChild(sparkle);
+        
+        setTimeout(() => {
+          sparkle.remove();
+        }, 600);
+      }
+    }
+  </script>
+</body>
+</html>
