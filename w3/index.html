@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 夢幻可愛迷因產生器 Kawaii Meme Generator 🌸</title>
+
+    <!-- Google Fonts: Mochiy Pop P One (圓潤可愛字體) & Sniglet & Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&family=Noto+Sans+TC:wght@700;900&family=Sniglet:wght@800&display=swap" rel="stylesheet">
+
+    <!-- html2canvas CDN (匯出截圖用) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* === 日系粉嫩可愛風格變數 === */
+        :root {
+            --bg-color: #fce7f3;
+            --panel-bg: rgba(255, 255, 255, 0.9);
+            --pastel-pink: #f472b6;
+            --pastel-purple: #c084fc;
+            --pastel-yellow: #fef08a;
+            --pastel-blue: #38bdf8;
+            --text-main: #701a75;
+            --radius-round: 24px;
+            --box-shadow: 0 10px 25px rgba(244, 114, 182, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans TC', 'Mochiy Pop P One', cursive, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(#fbcfe8 20%, transparent 20%),
+                radial-gradient(#e0e7ff 20%, transparent 20%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 12px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Mochiy Pop P One', cursive;
+            font-size: 2.2rem;
+            color: var(--pastel-pink);
+            text-shadow: 3px 3px 0px #ffffff, 5px 5px 0px #fbcfe8;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            color: #a21caf;
+            font-size: 0.95rem;
+            font-weight: bold;
+            background: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: inline-block;
+        }
+
+        /* === 主卡片響應式佈局 === */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        @media (min-width: 820px) {
+            .app-container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        /* === 左側：畫布預覽區 === */
+        .preview-card {
+            flex: 1.1;
+            background: var(--panel-bg);
+            border: 4px solid #ffffff;
+            border-radius: var(--radius-round);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .meme-box {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1 / 1;
+            background-color: #fff5f8;
+            border: 3px dashed #f472b6;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 15px rgba(244, 114, 182, 0.15);
+        }
+
+        .meme-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .placeholder-text {
+            position: absolute;
+            color: #db2777;
+            font-size: 1.05rem;
+            font-weight: bold;
+            text-align: center;
+            pointer-events: none;
+            line-height: 1.7;
+        }
+
+        /* 迷因文字 Overlay (黑邊強效處理) */
+        .meme-text {
+            position: absolute;
+            left: 5%;
+            width: 90%;
+            text-align: center;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-weight: 900;
+            line-height: 1.25;
+            word-break: break-word;
+            user-select: none;
+            pointer-events: none;
+            color: #ffffff;
+            /* 8 方向超厚黑色邊框，確保任何顏色的圖片上文字都清晰 */
+            text-shadow: 
+                -3px -3px 0 #000,  3px -3px 0 #000,
+                -3px  3px 0 #000,  3px  3px 0 #000,
+                 0px -3px 0 #000,  0px  3px 0 #000,
+                -3px  0px 0 #000,  3px  0px 0 #000,
+                 0px  4px 10px rgba(0,0,0,0.8);
+            transform-origin: center center;
+            transition: color 0.1s;
+        }
+
+        .meme-text.top {
+            top: 5%;
+        }
+
+        .meme-text.bottom {
+            bottom: 5%;
+        }
+
+        /* === 右側：控制面板區 === */
+        .control-card {
+            flex: 1;
+            background: var(--panel-bg);
+            border: 4px solid #ffffff;
+            border-radius: var(--radius-round);
+            padding: 24px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #c026d3;
+            letter-spacing: 0.5px;
+            border-bottom: 2px dashed #f472b6;
+            padding-bottom: 4px;
+            margin-bottom: 2px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.88rem;
+            color: #86198f;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* 可愛上傳按鈕 */
+        .file-upload-btn {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: #fdf2f8;
+            border: 2px dashed var(--pastel-pink);
+            color: var(--pastel-pink);
+            font-weight: 900;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload-btn:hover {
+            background: #fce7f3;
+            transform: scale(1.02);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* 輸入框樣式 */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #fff;
+            border: 2px solid #fbcfe8;
+            border-radius: 12px;
+            color: #701a75;
+            font-size: 0.95rem;
+            font-weight: bold;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--pastel-pink);
+            box-shadow: 0 0 8px rgba(244, 114, 182, 0.4);
+        }
+
+        /* 滑桿與顏色排版 */
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--pastel-pink);
+            cursor: pointer;
+        }
+
+        .color-picker-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: 2px solid #fbcfe8;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 2px;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 50%;
+            border: none;
+        }
+
+        /* 可愛下載按鈕 */
+        .btn-download {
+            margin-top: 10px;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f472b6, #c084fc);
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 900;
+            border: 3px solid #ffffff;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(244, 114, 182, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 20px rgba(244, 114, 182, 0.6);
+        }
+
+        .btn-download:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>✨ 夢幻迷因小工作坊 ✨</h1>
+        <p>🎀 上傳圖片 ‧ 加上可愛文字 ‧ 免費匯出 🎀</p>
+    </header>
+
+    <div class="app-container">
+        <!-- 左側：畫布區域 -->
+        <div class="preview-card">
+            <div class="meme-box" id="memeBox">
+                <div class="placeholder-text" id="placeholderText">
+                    🐾 點擊右側按鈕<br>上傳你的可愛梗圖底圖吧！
+                </div>
+                <img id="memeImage" src="" alt="Meme Preview" style="display: none;">
+                <div id="topTextDisplay" class="meme-text top"></div>
+                <div id="bottomTextDisplay" class="meme-text bottom"></div>
+            </div>
+        </div>
+
+        <!-- 右側：控制面板 -->
+        <div class="control-card">
+            <!-- 1. 本機圖片上傳 (FileReader API 徹底避開 CORS 錯誤) -->
+            <div class="section-title">🌸 01. 選擇底圖</div>
+            <div class="form-group">
+                <label for="imageLoader" class="file-upload-btn">
+                    🎀 上傳照片 (JPG / PNG / WEBP)
+                </label>
+                <input type="file" id="imageLoader" accept="image/*">
+            </div>
+
+            <!-- 2. 即時雙層文字輸入 -->
+            <div class="section-title">🍓 02. 輸入迷因文字</div>
+            <div class="form-group">
+                <label for="textTop">上方文字 (Top)</label>
+                <input type="text" id="textTop" placeholder="當貓咪突然看著空氣..." autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="textBottom">下方文字 (Bottom)</label>
+                <input type="text" id="textBottom" placeholder="...然後開始對著牆壁發呆" autocomplete="off">
+            </div>
+
+            <!-- 3. 滑桿參數控制 -->
+            <div class="section-title">🍬 03. 文字樣式微調</div>
+            
+            <div class="control-row">
+                <div class="form-group">
+                    <label for="fontSize">文字大小 <span id="fontSizeVal">36px</span></label>
+                    <input type="range" id="fontSize" min="16" max="72" value="36">
+                </div>
+                <div class="form-group">
+                    <label for="textRotate">旋轉角度 <span id="textRotateVal">0°</span></label>
+                    <input type="range" id="textRotate" min="-30" max="30" value="0">
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="form-group">
+                    <label for="offsetY">垂直位移 <span id="offsetYVal">5%</span></label>
+                    <input type="range" id="offsetY" min="0" max="25" value="5">
+                </div>
+                <div class="form-group">
+                    <label>字體顏色</label>
+                    <div class="color-picker-wrap">
+                        <input type="color" id="textColor" value="#ffffff">
+                        <span style="font-size: 0.8rem; color: #a21caf;">選擇色彩</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. html2canvas 高解析度匯出下載 -->
+            <button class="btn-download" id="downloadBtn">💖 下載萌萌迷因圖 💖</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM 元素選取
+        const imageLoader = document.getElementById('imageLoader');
+        const memeImage = document.getElementById('memeImage');
+        const placeholderText = document.getElementById('placeholderText');
+        const memeBox = document.getElementById('memeBox');
+
+        const textTopInput = document.getElementById('textTop');
+        const textBottomInput = document.getElementById('textBottom');
+        const topTextDisplay = document.getElementById('topTextDisplay');
+        const bottomTextDisplay = document.getElementById('bottomTextDisplay');
+
+        const fontSizeInput = document.getElementById('fontSize');
+        const fontSizeVal = document.getElementById('fontSizeVal');
+        const textRotateInput = document.getElementById('textRotate');
+        const textRotateVal = document.getElementById('textRotateVal');
+        const offsetYInput = document.getElementById('offsetY');
+        const offsetYVal = document.getElementById('offsetYVal');
+        const textColorInput = document.getElementById('textColor');
+
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // 1. 本機圖片讀取 (使用 FileReader API 避開 CORS 限制)
+        imageLoader.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                memeImage.src = event.target.result;
+                memeImage.style.display = 'block';
+                placeholderText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 2. 文字即時同步
+        textTopInput.addEventListener('input', () => {
+            topTextDisplay.textContent = textTopInput.value;
+        });
+
+        textBottomInput.addEventListener('input', () => {
+            bottomTextDisplay.textContent = textBottomInput.value;
+        });
+
+        // 3. 滑桿與樣式動態更新函數
+        function updateStyles() {
+            const size = fontSizeInput.value + 'px';
+            const rotate = textRotateInput.value + 'deg';
+            const offset = offsetYInput.value + '%';
+            const color = textColorInput.value;
+
+            // 數值顯示更新
+            fontSizeVal.textContent = size;
+            textRotateVal.textContent = rotate;
+            offsetYVal.textContent = offset;
+
+            // 套用至文字
+            [topTextDisplay, bottomTextDisplay].forEach(el => {
+                el.style.fontSize = size;
+                el.style.color = color;
+            });
+
+            topTextDisplay.style.transform = `rotate(${rotate})`;
+            bottomTextDisplay.style.transform = `rotate(${rotate})`;
+
+            topTextDisplay.style.top = offset;
+            bottomTextDisplay.style.bottom = offset;
+        }
+
+        // 綁定事件監聽
+        [fontSizeInput, textRotateInput, offsetYInput, textColorInput].forEach(ctrl => {
+            ctrl.addEventListener('input', updateStyles);
+        });
+
+        // 初始化
+        updateStyles();
+
+        // 4. html2canvas 下載實作
+        downloadBtn.addEventListener('click', () => {
+            if (!memeImage.src || memeImage.style.display === 'none') {
+                alert('請先上傳一張可愛的圖片底圖喔！');
+                return;
+            }
+
+            const originalBtnText = downloadBtn.textContent;
+            downloadBtn.textContent = '🎀 正在為你製作圖片中...';
+            downloadBtn.disabled = true;
+
+            html2canvas(memeBox, {
+                useCORS: true,
+                scale: 2, // 雙倍採樣，下載高解析度不模糊
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `kawaii-meme-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                downloadBtn.textContent = originalBtnText;
+                downloadBtn.disabled = false;
+            }).catch(err => {
+                console.error('截圖導出失敗:', err);
+                alert('匯出圖片時發生小錯誤，請重新試一次！');
+                downloadBtn.textContent = originalBtnText;
+                downloadBtn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
