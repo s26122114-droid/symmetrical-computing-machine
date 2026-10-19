@@ -1,551 +1,457 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌸 夢幻可愛迷因產生器 Kawaii Meme Generator 🌸</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>朋友對我的動態留言板 🌸</title>
+  <!-- Google Fonts: 引入可愛風格的字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
 
-    <!-- Google Fonts: Mochiy Pop P One & Sniglet & Noto Sans TC & Caveat (手寫悄悄話感) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Mochiy+Pop+P+One&family=Noto+Sans+TC:wght@700;900&family=Sniglet:wght@800&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================
+       【顏色與主題變數設定】
+       方便後續修改整體視覺配色！
+       ========================================== */
+    :root {
+      --bg-color: #fef4f8;           /* 網頁背景色 (溫和粉白) */
+      --header-title: #ff6b8b;       /* 標題顏色 (甜美粉紅) */
+      --card-bg: #ffffff;            /* 卡片預設背景色 (純白) */
+      --card-text: #5a4b51;          /* 內文文字顏色 (深柔灰棕) */
+      --card-name: #ff85a1;          /* 名字標籤顏色 (珊瑚粉) */
+      --card-time: #b5a3ab;          /* 時間標籤顏色 (淺灰色) */
+      
+      /* 輪播 Highlight 特效顏色 */
+      --highlight-border: #ff477e;   /* 高亮卡片的邊框顏色 */
+      --highlight-shadow: rgba(255, 71, 126, 0.4); /* 高亮卡片的發光陰影顏色 */
+      
+      /* 動畫輪播秒數：請記得同步修改 JavaScript 中的 CAROUSEL_INTERVAL 變數 */
+    }
 
-    <!-- html2canvas CDN (匯出截圖用) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <style>
-        /* === 日系粉嫩可愛風格變數 === */
-        :root {
-            --bg-color: #fce7f3;
-            --panel-bg: rgba(255, 255, 255, 0.9);
-            --pastel-pink: #f472b6;
-            --pastel-purple: #c084fc;
-            --pastel-yellow: #fef08a;
-            --pastel-blue: #38bdf8;
-            --text-main: #701a75;
-            --radius-round: 24px;
-            --box-shadow: 0 10px 25px rgba(244, 114, 182, 0.25);
-        }
+    body {
+      font-family: 'Zen Maru Gothic', 'Fredoka', sans-serif;
+      background-color: var(--bg-color);
+      /* 背景可愛點點花紋 */
+      background-image: radial-gradient(#ffd1dc 15%, transparent 16%), radial-gradient(#ffe5ec 15%, transparent 16%);
+      background-size: 60px 60px;
+      background-position: 0 0, 30px 30px;
+      color: var(--card-text);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Noto Sans TC', 'Mochiy Pop P One', cursive, sans-serif;
-        }
+    /* --- 頁首標題區 --- */
+    header {
+      text-align: center;
+      margin: 20px 0 30px 0;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(#fbcfe8 20%, transparent 20%),
-                radial-gradient(#e0e7ff 20%, transparent 20%);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 24px 12px;
-        }
+    header h1 {
+      color: var(--header-title);
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 3px 3px 0px #ffffff, 5px 5px 0px #ffe5ec;
+      margin-bottom: 8px;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    header p {
+      font-size: 1rem;
+      color: #9c8089;
+      font-weight: 500;
+    }
 
-        header h1 {
-            font-family: 'Mochiy Pop P One', cursive;
-            font-size: 2.2rem;
-            color: var(--pastel-pink);
-            text-shadow: 3px 3px 0px #ffffff, 5px 5px 0px #fbcfe8;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-        }
+    /* --- 載入中動畫區 --- */
+    #loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 80px;
+    }
 
-        header p {
-            color: #a21caf;
-            font-size: 0.95rem;
-            font-weight: bold;
-            background: #ffffff;
-            padding: 6px 16px;
-            border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            display: inline-block;
-        }
+    /* 可愛跳躍粉紅泡泡 */
+    .loader-bubbles {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
 
-        /* === 主卡片響應式佈局 === */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            width: 100%;
-            max-width: 1000px;
-        }
+    .bubble {
+      width: 20px;
+      height: 20px;
+      background-color: #ff85a1;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate ease-in-out;
+    }
 
-        @media (min-width: 820px) {
-            .app-container {
-                flex-direction: row;
-                align-items: flex-start;
-            }
-        }
+    .bubble:nth-child(2) {
+      background-color: #f7aef8;
+      animation-delay: 0.2s;
+    }
 
-        /* === 左側：畫布預覽區 === */
-        .preview-card {
-            flex: 1.1;
-            background: var(--panel-bg);
-            border: 4px solid #ffffff;
-            border-radius: var(--radius-round);
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .bubble:nth-child(3) {
+      background-color: #b388eb;
+      animation-delay: 0.4s;
+    }
 
-        .meme-box {
-            position: relative;
-            width: 100%;
-            max-width: 480px;
-            aspect-ratio: 1 / 1;
-            background-color: #fff5f8;
-            border: 3px dashed #f472b6;
-            border-radius: 18px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: inset 0 0 15px rgba(244, 114, 182, 0.15);
-        }
+    @keyframes bounce {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-20px) scale(1.1); }
+    }
 
-        .meme-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
+    .loading-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--header-title);
+      letter-spacing: 1px;
+    }
 
-        .placeholder-text {
-            position: absolute;
-            color: #db2777;
-            font-size: 1.05rem;
-            font-weight: bold;
-            text-align: center;
-            pointer-events: none;
-            line-height: 1.7;
-        }
+    /* --- 主要內容區 --- */
+    main {
+      width: 100%;
+      max-width: 1200px;
+    }
 
-        /* 迷因文字 Overlay (黑邊強效處理) */
-        .meme-text {
-            position: absolute;
-            left: 5%;
-            width: 90%;
-            text-align: center;
-            font-family: 'Noto Sans TC', sans-serif;
-            font-weight: 900;
-            line-height: 1.25;
-            word-break: break-word;
-            user-select: none;
-            pointer-events: none;
-            color: #ffffff;
-            text-shadow: 
-                -3px -3px 0 #000,  3px -3px 0 #000,
-                -3px  3px 0 #000,  3px  3px 0 #000,
-                 0px -3px 0 #000,  0px  3px 0 #000,
-                -3px  0px 0 #000,  3px  0px 0 #000,
-                 0px  4px 10px rgba(0,0,0,0.8);
-            transform-origin: center center;
-            transition: color 0.1s;
-        }
+    /* --- 瀑布流排版 (Masonry Layout) --- */
+    .masonry-grid {
+      /* RWD 響應式欄位設定：電腦版 3 欄 */
+      column-count: 3;
+      column-gap: 24px;
+    }
 
-        .meme-text.top {
-            top: 5%;
-        }
+    /* 螢幕較小（平板）改為 2 欄 */
+    @media (max-width: 900px) {
+      .masonry-grid {
+        column-count: 2;
+      }
+    }
 
-        .meme-text.bottom {
-            bottom: 5%;
-        }
+    /* 手機版改為 1 欄 */
+    @media (max-width: 600px) {
+      .masonry-grid {
+        column-count: 1;
+      }
+    }
 
-        /* 悄悄話專用樣式 */
-        .meme-text.whisper {
-            top: 50%;
-            transform: translateY(-50%);
-            font-family: 'Caveat', 'Noto Sans TC', cursive, sans-serif;
-            font-weight: 700;
-            text-shadow: 
-                0px 0px 8px rgba(255, 255, 255, 0.9),
-                -1px -1px 0 #fff, 1px -1px 0 #fff,
-                -1px  1px 0 #fff, 1px  1px 0 #fff;
-            opacity: 0.9;
-        }
+    /* --- 留言卡片樣式 --- */
+    .message-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+      /* 防止卡片在瀑布流中被拆斷到不同欄位 */
+      break-inside: avoid;
+      box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2);
+      border: 3px solid #fff0f5;
+      position: relative;
+      /* 滑順的渡過動畫（高亮與變暗） */
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      cursor: pointer;
+    }
 
-        /* === 右側：控制面板區 === */
-        .control-card {
-            flex: 1;
-            background: var(--panel-bg);
-            border: 4px solid #ffffff;
-            border-radius: var(--radius-round);
-            padding: 24px;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+    .message-card:hover {
+      transform: translateY(-4px);
+    }
 
-        .section-title {
-            font-size: 0.95rem;
-            font-weight: 900;
-            color: #c026d3;
-            letter-spacing: 0.5px;
-            border-bottom: 2px dashed #f472b6;
-            padding-bottom: 4px;
-            margin-bottom: 2px;
-        }
+    /* 可愛卡片可愛貼紙裝飾標籤 */
+    .card-badge {
+      position: absolute;
+      top: -10px;
+      right: 15px;
+      background: #ffe5ec;
+      color: #ff477e;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      border: 2px solid #ffffff;
+    }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 2px dashed #ffe5ec;
+      padding-bottom: 8px;
+    }
 
-        .form-group label {
-            font-size: 0.88rem;
-            color: #86198f;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-        }
+    .card-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--card-name);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        /* 可愛上傳按鈕 */
-        .file-upload-btn {
-            display: block;
-            text-align: center;
-            padding: 12px;
-            background: #fdf2f8;
-            border: 2px dashed var(--pastel-pink);
-            color: var(--pastel-pink);
-            font-weight: 900;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+    .card-time {
+      font-size: 0.75rem;
+      color: var(--card-time);
+    }
 
-        .file-upload-btn:hover {
-            background: #fce7f3;
-            transform: scale(1.02);
-        }
+    .card-content {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: var(--card-text);
+      white-space: pre-wrap; /* 保留留言中的換行 */
+      word-break: break-word;
+    }
 
-        input[type="file"] {
-            display: none;
-        }
+    /* ==========================================
+       【輪播特效：高亮 (Highlight) & 變暗 (Dim)】
+       ========================================== */
 
-        /* 輸入框樣式 */
-        input[type="text"] {
-            width: 100%;
-            padding: 10px 14px;
-            background-color: #fff;
-            border: 2px solid #fbcfe8;
-            border-radius: 12px;
-            color: #701a75;
-            font-size: 0.95rem;
-            font-weight: bold;
-            outline: none;
-            transition: border-color 0.2s;
-        }
+    /* 被選中的高亮卡片樣式 */
+    .message-card.highlight {
+      transform: scale(1.08); /* 放大卡片 */
+      border-color: var(--highlight-border); /* 鮮豔邊框 */
+      box-shadow: 0 12px 30px var(--highlight-shadow); /* 外發光效果 */
+      filter: blur(0px) brightness(1.05);
+      z-index: 10; /* 確保浮在最上層 */
+    }
 
-        input[type="text"]:focus {
-            border-color: var(--pastel-pink);
-            box-shadow: 0 0 8px rgba(244, 114, 182, 0.4);
-        }
-
-        /* 滑桿與顏色排版 */
-        .control-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--pastel-pink);
-            cursor: pointer;
-        }
-
-        .color-picker-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        input[type="color"] {
-            -webkit-appearance: none;
-            border: 2px solid #fbcfe8;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            background: none;
-        }
-
-        input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 2px;
-        }
-
-        input[type="color"]::-webkit-color-swatch {
-            border-radius: 50%;
-            border: none;
-        }
-
-        /* 可愛下載按鈕 */
-        .btn-download {
-            margin-top: 10px;
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #f472b6, #c084fc);
-            color: #ffffff;
-            font-size: 1.05rem;
-            font-weight: 900;
-            border: 3px solid #ffffff;
-            border-radius: 16px;
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(244, 114, 182, 0.4);
-            transition: all 0.2s;
-        }
-
-        .btn-download:hover {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 8px 20px rgba(244, 114, 182, 0.6);
-        }
-
-        .btn-download:active {
-            transform: translateY(0);
-        }
-    </style>
+    /* 其他未被選中的卡片變暗/變模糊樣式 */
+    .message-card.dimmed {
+      opacity: 0.5; /* 降低透明度 */
+      filter: blur(1.5px) grayscale(20%); /* 微模糊與降飽和度 */
+      transform: scale(0.96); /* 稍微縮小 */
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>✨ 夢幻迷因小工作坊 ✨</h1>
-        <p>🎀 上傳圖片 ‧ 加上可愛文字 ‧ 免費匯出 🎀</p>
-    </header>
+  <header>
+    <h1>💌 朋友對我的悄悄話留言板 💌</h1>
+    <p>✨ 甜甜的回憶與溫馨留言集結地 ✨</p>
+  </header>
 
-    <div class="app-container">
-        <!-- 左側：畫布區域 -->
-        <div class="preview-card">
-            <div class="meme-box" id="memeBox">
-                <div class="placeholder-text" id="placeholderText">
-                    🐾 點擊右側按鈕<br>上傳你的可愛梗圖底圖吧！
-                </div>
-                <img id="memeImage" src="" alt="Meme Preview" style="display: none;">
-                <div id="topTextDisplay" class="meme-text top"></div>
-                <div id="whisperTextDisplay" class="meme-text whisper"></div>
-                <div id="bottomTextDisplay" class="meme-text bottom"></div>
-            </div>
-        </div>
-
-        <!-- 右側：控制面板 -->
-        <div class="control-card">
-            <!-- 1. 本機圖片上傳 -->
-            <div class="section-title">🌸 01. 選擇底圖</div>
-            <div class="form-group">
-                <label for="imageLoader" class="file-upload-btn">
-                    🎀 上傳照片 (JPG / PNG / WEBP)
-                </label>
-                <input type="file" id="imageLoader" accept="image/*">
-            </div>
-
-            <!-- 2. 即時雙層文字輸入 -->
-            <div class="section-title">🍓 02. 輸入迷因文字</div>
-            <div class="form-group">
-                <label for="textTop">上方文字 (Top)</label>
-                <input type="text" id="textTop" placeholder="當貓咪突然看著空氣..." autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label for="textBottom">下方文字 (Bottom)</label>
-                <input type="text" id="textBottom" placeholder="...然後開始對著牆壁發呆" autocomplete="off">
-            </div>
-
-            <!-- 3. 滑桿參數控制 -->
-            <div class="section-title">🍬 03. 文字樣式微調</div>
-            
-            <div class="control-row">
-                <div class="form-group">
-                    <label for="fontSize">文字大小 <span id="fontSizeVal">36px</span></label>
-                    <input type="range" id="fontSize" min="16" max="72" value="36">
-                </div>
-                <div class="form-group">
-                    <label for="textRotate">旋轉角度 <span id="textRotateVal">0°</span></label>
-                    <input type="range" id="textRotate" min="-30" max="30" value="0">
-                </div>
-            </div>
-
-            <div class="control-row">
-                <div class="form-group">
-                    <label for="offsetY">垂直位移 <span id="offsetYVal">5%</span></label>
-                    <input type="range" id="offsetY" min="0" max="25" value="5">
-                </div>
-                <div class="form-group">
-                    <label>字體顏色</label>
-                    <div class="color-picker-wrap">
-                        <input type="color" id="textColor" value="#ffffff">
-                        <span style="font-size: 0.8rem; color: #a21caf;">選擇色彩</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. 解鎖：悄悄話 (第四周) -->
-            <div class="section-title">💌 04. 悄悄話</div>
-            <div class="form-group">
-                <label for="textWhisper">隱藏的私密心語</label>
-                <input type="text" id="textWhisper" placeholder="（在這裡寫下你想偷偷說的話...）" autocomplete="off">
-            </div>
-            <div class="control-row">
-                <div class="form-group">
-                    <label for="whisperFontSize">悄悄話大小 <span id="whisperFontSizeVal">24px</span></label>
-                    <input type="range" id="whisperFontSize" min="14" max="48" value="24">
-                </div>
-                <div class="form-group">
-                    <label>悄悄話顏色</label>
-                    <div class="color-picker-wrap">
-                        <input type="color" id="whisperColor" value="#f472b6">
-                        <span style="font-size: 0.8rem; color: #a21caf;">選擇色彩</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. 高解析度匯出下載 -->
-            <button class="btn-download" id="downloadBtn">💖 下載萌萌迷因圖 💖</button>
-        </div>
+  <!-- 讀取中動畫區塊 -->
+  <div id="loading-container">
+    <div class="loader-bubbles">
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
     </div>
+    <div class="loading-text">讀取留言中... 請稍等一下唷 🌸</div>
+  </div>
 
-    <script>
-        // DOM 元素選取
-        const imageLoader = document.getElementById('imageLoader');
-        const memeImage = document.getElementById('memeImage');
-        const placeholderText = document.getElementById('placeholderText');
-        const memeBox = document.getElementById('memeBox');
+  <!-- 留言牆區塊 (瀑布流) -->
+  <main>
+    <div id="wall" class="masonry-grid"></div>
+  </main>
 
-        const textTopInput = document.getElementById('textTop');
-        const textBottomInput = document.getElementById('textBottom');
-        const textWhisperInput = document.getElementById('textWhisper');
+  <script>
+    // ==========================================
+    // 【參數設定區】
+    // ==========================================
+    
+    // 原始 Google 試算表連結轉 CSV 下載網址
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTtZHd3rvJYAqKTKQvphuvwqfd9BWBq8sEgqiiDmmf7gjr8Ofa7Sl2OBda3R4RfsiW7Wg9HNt2ImGzY/pub?output=csv';
 
-        const topTextDisplay = document.getElementById('topTextDisplay');
-        const bottomTextDisplay = document.getElementById('bottomTextDisplay');
-        const whisperTextDisplay = document.getElementById('whisperTextDisplay');
+    // 💡 輪播切換秒數設定 (單位：毫秒，3000ms = 3 秒)
+    const CAROUSEL_INTERVAL = 3000; 
 
-        const fontSizeInput = document.getElementById('fontSize');
-        const fontSizeVal = document.getElementById('fontSizeVal');
-        const textRotateInput = document.getElementById('textRotate');
-        const textRotateVal = document.getElementById('textRotateVal');
-        const offsetYInput = document.getElementById('offsetY');
-        const offsetYVal = document.getElementById('offsetYVal');
-        const textColorInput = document.getElementById('textColor');
+    // 全域變數
+    let messages = [];          // 儲存解析後的留言資料
+    let currentHighlightIndex = 0; // 目前高亮的卡片索引
+    let carouselTimer = null;   // 計時器物件
 
-        const whisperFontSizeInput = document.getElementById('whisperFontSize');
-        const whisperFontSizeVal = document.getElementById('whisperFontSizeVal');
-        const whisperColorInput = document.getElementById('whisperColor');
+    // ==========================================
+    // 【CSV 解析函數】
+    // 處理欄位包含「逗號 (,)」與「換行」的複雜 CSV 格式
+    // ==========================================
+    function parseCSV(text) {
+      const lines = [];
+      let row = [];
+      let entry = '';
+      let insideQuotes = false;
 
-        const downloadBtn = document.getElementById('downloadBtn');
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
 
-        // 1. 本機圖片讀取
-        imageLoader.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        if (char === '"') {
+          // 處理雙引號轉義 (例如: "")
+          if (insideQuotes && nextChar === '"') {
+            entry += '"';
+            i++; 
+          } else {
+            // 切換引號狀態
+            insideQuotes = !insideQuotes;
+          }
+        } else if (char === ',' && !insideQuotes) {
+          // 逗號切換下一個欄位
+          row.push(entry.trim());
+          entry = '';
+        } else if ((char === '\r' || char === '\n') && !insideQuotes) {
+          // 換行符號切換下一個橫列
+          if (char === '\r' && nextChar === '\n') {
+            i++; // 跳過 \r\n
+          }
+          row.push(entry.trim());
+          if (row.length > 0 && row.some(field => field !== '')) {
+            lines.push(row);
+          }
+          row = [];
+          entry = '';
+        } else {
+          entry += char;
+        }
+      }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                memeImage.src = event.target.result;
-                memeImage.style.display = 'block';
-                placeholderText.style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        });
+      // 處理最後一行資料
+      if (entry || row.length > 0) {
+        row.push(entry.trim());
+        lines.push(row);
+      }
 
-        // 2. 文字即時同步
-        textTopInput.addEventListener('input', () => {
-            topTextDisplay.textContent = textTopInput.value;
-        });
+      return lines;
+    }
 
-        textBottomInput.addEventListener('input', () => {
-            bottomTextDisplay.textContent = textBottomInput.value;
-        });
+    // ==========================================
+    // 【獲取與處理資料】
+    // ==========================================
+    async function fetchMessages() {
+      try {
+        const response = await fetch(CSV_URL);
+        if (!response.ok) throw new Error('無法讀取試算表資料');
 
-        textWhisperInput.addEventListener('input', () => {
-            whisperTextDisplay.textContent = textWhisperInput.value;
-        });
+        const csvText = await response.text();
+        const parsedData = parseCSV(csvText);
 
-        // 3. 滑桿與樣式動態更新函數
-        function updateStyles() {
-            const size = fontSizeInput.value + 'px';
-            const rotate = textRotateInput.value + 'deg';
-            const offset = offsetYInput.value + '%';
-            const color = textColorInput.value;
+        // 排除標題列 (第一行: 時間戳記, 名字, 悄悄話)，處理實際留言內容
+        const dataRows = parsedData.slice(1);
 
-            // 數值顯示更新
-            fontSizeVal.textContent = size;
-            textRotateVal.textContent = rotate;
-            offsetYVal.textContent = offset;
+        messages = dataRows.map(row => ({
+          timestamp: row[0] || '未知時間',
+          name: row[1] || '匿名好朋友',
+          content: row[2] || '這是一則空白悄悄話～'
+        }));
 
-            // 套用至上下文字
-            [topTextDisplay, bottomTextDisplay].forEach(el => {
-                el.style.fontSize = size;
-                el.style.color = color;
-            });
+        // 隱藏讀取動畫，生成留言卡片牆
+        document.getElementById('loading-container').style.display = 'none';
+        renderWall(messages);
 
-            topTextDisplay.style.transform = `rotate(${rotate})`;
-            bottomTextDisplay.style.transform = `rotate(${rotate})`;
-
-            topTextDisplay.style.top = offset;
-            bottomTextDisplay.style.bottom = offset;
-
-            // 套用悄悄話樣式
-            const whisperSize = whisperFontSizeInput.value + 'px';
-            const whisperColor = whisperColorInput.value;
-            whisperFontSizeVal.textContent = whisperSize;
-            whisperTextDisplay.style.fontSize = whisperSize;
-            whisperTextDisplay.style.color = whisperColor;
+        // 如果有資料，開啟隨時間輪播特效
+        if (messages.length > 0) {
+          startCarousel();
         }
 
-        // 綁定事件監聽
-        [fontSizeInput, textRotateInput, offsetYInput, textColorInput, whisperFontSizeInput, whisperColorInput].forEach(ctrl => {
-            ctrl.addEventListener('input', updateStyles);
+      } catch (error) {
+        console.error('讀取失敗:', error);
+        document.getElementById('loading-container').innerHTML = `
+          <div class="loading-text" style="color: #ff4d4d;">❌ 留言讀取失敗，請稍後再試！</div>
+        `;
+      }
+    }
+
+    // ==========================================
+    // 【動態生成 HTML 卡片】
+    // ==========================================
+    function renderWall(data) {
+      const wallContainer = document.getElementById('wall');
+      wallContainer.innerHTML = ''; // 清空內容
+
+      data.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'message-card';
+        card.dataset.index = index;
+
+        // 格式化顯示時間（簡化日期呈現）
+        let formattedTime = item.timestamp;
+        if(item.timestamp.includes(' ')) {
+          formattedTime = item.timestamp.split(' ')[0]; // 只保留日期部分
+        }
+
+        card.innerHTML = `
+          <div class="card-badge"># ${index + 1}</div>
+          <div class="card-header">
+            <div class="card-name">🌸 ${escapeHTML(item.name)}</div>
+            <div class="card-time">${escapeHTML(formattedTime)}</div>
+          </div>
+          <div class="card-content">${escapeHTML(item.content)}</div>
+        `;
+
+        // 點擊卡片時，可手動將焦點切換到該卡片
+        card.addEventListener('click', () => {
+          highlightCard(index);
+          resetCarousel(); // 重置輪播計時器
         });
 
-        // 初始化
-        updateStyles();
+        wallContainer.appendChild(card);
+      });
+    }
 
-        // 4. html2canvas 下載實作
-        downloadBtn.addEventListener('click', () => {
-            if (!memeImage.src || memeImage.style.display === 'none') {
-                alert('請先上傳一張可愛的圖片底圖喔！');
-                return;
-            }
+    // XSS 防護處理函數
+    function escapeHTML(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-            const originalBtnText = downloadBtn.textContent;
-            downloadBtn.textContent = '🎀 正在為你製作圖片中...';
-            downloadBtn.disabled = true;
+    // ==========================================
+    // 【隨時間輪播特效 (Highlight)】
+    // ==========================================
+    function highlightCard(index) {
+      const cards = document.querySelectorAll('.message-card');
+      if (cards.length === 0) return;
 
-            html2canvas(memeBox, {
-                useCORS: true,
-                scale: 2,
-                backgroundColor: null
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `kawaii-meme-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+      cards.forEach((card, i) => {
+        if (i === index) {
+          // 當前選中的卡片：加上高亮樣式，移除變暗樣式
+          card.classList.add('highlight');
+          card.classList.remove('dimmed');
+        } else {
+          // 其他未選中卡片：加上變暗樣式，移除高亮樣式
+          card.classList.remove('highlight');
+          card.classList.add('dimmed');
+        }
+      });
 
-                downloadBtn.textContent = originalBtnText;
-                downloadBtn.disabled = false;
-            }).catch(err => {
-                console.error('截圖導出失敗:', err);
-                alert('匯出圖片時發生小錯誤，請重新試一次！');
-                downloadBtn.textContent = originalBtnText;
-                downloadBtn.disabled = false;
-            });
-        });
-    </script>
+      currentHighlightIndex = index;
+    }
+
+    // 自動切換下一張卡片
+    function nextHighlight() {
+      if (messages.length === 0) return;
+      const nextIndex = (currentHighlightIndex + 1) % messages.length;
+      highlightCard(nextIndex);
+    }
+
+    // 開啟計時器
+    function startCarousel() {
+      // 預設先亮起第一張
+      highlightCard(0);
+      
+      // 設定固定間隔時間執行
+      carouselTimer = setInterval(nextHighlight, CAROUSEL_INTERVAL);
+    }
+
+    // 手點擊卡片後重置計時器，避免剛手動點擊完又立刻被自動切換
+    function resetCarousel() {
+      if (carouselTimer) {
+        clearInterval(carouselTimer);
+      }
+      carouselTimer = setInterval(nextHighlight, CAROUSEL_INTERVAL);
+    }
+
+    // 網頁載入後自動開始執行
+    window.addEventListener('DOMContentLoaded', fetchMessages);
+  </script>
 </body>
 </html>
