@@ -47,6 +47,16 @@
             flex-direction: column;
             align-items: center;
             padding: 24px 12px;
+            transition: background 0.5s ease;
+        }
+
+        /* 悄悄話主題模式背景 */
+        body.whisper-mode {
+            background-color: #2d1b36;
+            background-image: 
+                radial-gradient(#581c87 20%, transparent 20%),
+                radial-gradient(#3b0764 20%, transparent 20%);
+            color: #f3e8ff;
         }
 
         header {
@@ -135,7 +145,7 @@
             line-height: 1.7;
         }
 
-        /* 迷因文字 Overlay (黑邊強效處理) */
+        /* 迷因文字 Overlay */
         .meme-text {
             position: absolute;
             left: 5%;
@@ -148,7 +158,6 @@
             user-select: none;
             pointer-events: none;
             color: #ffffff;
-            /* 8 方向超厚黑色邊框，確保任何顏色的圖片上文字都清晰 */
             text-shadow: 
                 -3px -3px 0 #000,  3px -3px 0 #000,
                 -3px  3px 0 #000,  3px  3px 0 #000,
@@ -156,7 +165,17 @@
                 -3px  0px 0 #000,  3px  0px 0 #000,
                  0px  4px 10px rgba(0,0,0,0.8);
             transform-origin: center center;
-            transition: color 0.1s;
+            transition: color 0.1s, text-shadow 0.3s;
+        }
+
+        /* 悄悄話專屬文字特效 */
+        .meme-text.whisper-style {
+            font-style: italic;
+            letter-spacing: 2px;
+            text-shadow: 
+                0 0 10px #c084fc,
+                -2px -2px 0 #3b0764, 2px -2px 0 #3b0764,
+                -2px  2px 0 #3b0764, 2px  2px 0 #3b0764;
         }
 
         .meme-text.top {
@@ -204,7 +223,6 @@
             justify-content: space-between;
         }
 
-        /* 可愛上傳按鈕 */
         .file-upload-btn {
             display: block;
             text-align: center;
@@ -227,7 +245,6 @@
             display: none;
         }
 
-        /* 輸入框樣式 */
         input[type="text"] {
             width: 100%;
             padding: 10px 14px;
@@ -246,7 +263,6 @@
             box-shadow: 0 0 8px rgba(244, 114, 182, 0.4);
         }
 
-        /* 滑桿與顏色排版 */
         .control-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -284,7 +300,26 @@
             border: none;
         }
 
-        /* 可愛下載按鈕 */
+        /* 悄悄話解鎖按鈕 */
+        .btn-whisper {
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            color: #ffffff;
+            font-size: 0.92rem;
+            font-weight: 900;
+            border: 2px solid #ffffff;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-whisper:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
         .btn-download {
             margin-top: 10px;
             width: 100%;
@@ -332,7 +367,7 @@
 
         <!-- 右側：控制面板 -->
         <div class="control-card">
-            <!-- 1. 本機圖片上傳 (FileReader API 徹底避開 CORS 錯誤) -->
+            <!-- 1. 本機圖片上傳 -->
             <div class="section-title">🌸 01. 選擇底圖</div>
             <div class="form-group">
                 <label for="imageLoader" class="file-upload-btn">
@@ -352,8 +387,12 @@
                 <input type="text" id="textBottom" placeholder="...然後開始對著牆壁發呆" autocomplete="off">
             </div>
 
-            <!-- 3. 滑桿參數控制 -->
-            <div class="section-title">🍬 03. 文字樣式微調</div>
+            <!-- 3. 週四限定解鎖功能 -->
+            <div class="section-title">🔮 03. 週四限定限定解鎖</div>
+            <button class="btn-whisper" id="whisperBtn">🤫 切換「悄悄話」隱藏模式</button>
+
+            <!-- 4. 滑桿參數控制 -->
+            <div class="section-title">🍬 04. 文字樣式微調</div>
             
             <div class="control-row">
                 <div class="form-group">
@@ -380,7 +419,7 @@
                 </div>
             </div>
 
-            <!-- 4. html2canvas 高解析度匯出下載 -->
+            <!-- 5. 高解析度匯出下載 -->
             <button class="btn-download" id="downloadBtn">💖 下載萌萌迷因圖 💖</button>
         </div>
     </div>
@@ -405,9 +444,12 @@
         const offsetYVal = document.getElementById('offsetYVal');
         const textColorInput = document.getElementById('textColor');
 
+        const whisperBtn = document.getElementById('whisperBtn');
         const downloadBtn = document.getElementById('downloadBtn');
 
-        // 1. 本機圖片讀取 (使用 FileReader API 避開 CORS 限制)
+        let isWhisperActive = false;
+
+        // 1. 本機圖片讀取 (FileReader API)
         imageLoader.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -430,71 +472,29 @@
             bottomTextDisplay.textContent = textBottomInput.value;
         });
 
-        // 3. 滑桿與樣式動態更新函數
-        function updateStyles() {
-            const size = fontSizeInput.value + 'px';
-            const rotate = textRotateInput.value + 'deg';
-            const offset = offsetYInput.value + '%';
-            const color = textColorInput.value;
+        // 3. 週四（Day 4）限定「悄悄話」解鎖判斷
+        whisperBtn.addEventListener('click', () => {
+            const currentDay = new Date().getDay(); // 0 是週日，4 是週四
 
-            // 數值顯示更新
-            fontSizeVal.textContent = size;
-            textRotateVal.textContent = rotate;
-            offsetYVal.textContent = offset;
-
-            // 套用至文字
-            [topTextDisplay, bottomTextDisplay].forEach(el => {
-                el.style.fontSize = size;
-                el.style.color = color;
-            });
-
-            topTextDisplay.style.transform = `rotate(${rotate})`;
-            bottomTextDisplay.style.transform = `rotate(${rotate})`;
-
-            topTextDisplay.style.top = offset;
-            bottomTextDisplay.style.bottom = offset;
-        }
-
-        // 綁定事件監聽
-        [fontSizeInput, textRotateInput, offsetYInput, textColorInput].forEach(ctrl => {
-            ctrl.addEventListener('input', updateStyles);
-        });
-
-        // 初始化
-        updateStyles();
-
-        // 4. html2canvas 下載實作
-        downloadBtn.addEventListener('click', () => {
-            if (!memeImage.src || memeImage.style.display === 'none') {
-                alert('請先上傳一張可愛的圖片底圖喔！');
+            if (currentDay !== 4) {
+                alert('🔒「悄悄話」模式為週四限定解鎖功能！請在星期四再來嘗試喔～');
                 return;
             }
 
-            const originalBtnText = downloadBtn.textContent;
-            downloadBtn.textContent = '🎀 正在為你製作圖片中...';
-            downloadBtn.disabled = true;
+            // 若確定是週四則切換狀態
+            isWhisperActive = !isWhisperActive;
+            document.body.classList.toggle('whisper-mode', isWhisperActive);
+            topTextDisplay.classList.toggle('whisper-style', isWhisperActive);
+            bottomTextDisplay.classList.toggle('whisper-style', isWhisperActive);
 
-            html2canvas(memeBox, {
-                useCORS: true,
-                scale: 2, // 雙倍採樣，下載高解析度不模糊
-                backgroundColor: null
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `kawaii-meme-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                downloadBtn.textContent = originalBtnText;
-                downloadBtn.disabled = false;
-            }).catch(err => {
-                console.error('截圖導出失敗:', err);
-                alert('匯出圖片時發生小錯誤，請重新試一次！');
-                downloadBtn.textContent = originalBtnText;
-                downloadBtn.disabled = false;
-            });
+            if (isWhisperActive) {
+                textColorInput.value = '#e9d5ff';
+                updateStyles();
+                alert('🤫 恭喜解鎖【週四限定‧悄悄話】模式！畫布已切換為紫夜流光樣式。');
+            } else {
+                textColorInput.value = '#ffffff';
+                updateStyles();
+            }
         });
-    </script>
-</body>
-</html>
+
+        // 4. 滑桿與樣式動
