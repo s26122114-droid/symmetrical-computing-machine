@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人數位名片</title>
+    
+    <!-- 將 CSS 樣式直接寫在 style 標籤內 -->
+    <style>
+        /* 1. 基本設定，讓字體好看並清除預設的邊界 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        /* 2. 背景設定：滿版漸層與完美的置中魔法 */
+        body {
+            /* 淺粉色 (#ffe6f0) 到 淺粉藍色 (#e0f2fe) 的漸層背景 */
+            background: linear-gradient(135deg, #ffe6f0 0%, #e0f2fe 100%);
+            
+            /* 讓裡面的卡片在畫面上垂直與水平置中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 高度佔滿整個螢幕 */
+        }
+
+        /* 3. 名片卡片的主體設計 */
+        .card {
+            background-color: #ffffff; /* 純白背景 */
+            width: 90%;
+            max-width: 350px; /* 限制最寬不超過350px，確保比例好看 */
+            padding: 40px 30px;
+            border-radius: 20px; /* 現代感圓角 */
+            text-align: center; /* 讓裡面的文字和圖片都置中 */
+            
+            /* 現代感微陰影：X軸0, Y軸10px, 模糊度30px, 淡淡的黑色 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            
+            /* 加入一點滑鼠游標移上去的平滑動畫 */
+            transition: transform 0.3s ease;
+        }
+
+        /* 滑鼠移到卡片上
