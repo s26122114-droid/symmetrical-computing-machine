@@ -11,7 +11,7 @@
   <script>
     tailwind.config = {
       theme: {
-          extend: {
+        extend: {
           colors: {
             macaron: {
               pink: '#FFB7B2',
@@ -110,17 +110,6 @@
       animation: jelly 0.7s ease-in-out;
     }
 
-    /* 鎖定按鈕 Wiggle 動畫 */
-    @keyframes wiggle {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-4deg) scale(0.98); }
-      75% { transform: rotate(4deg) scale(0.98); }
-    }
-
-    .wiggle-hover:hover {
-      animation: wiggle 0.3s ease-in-out infinite;
-    }
-
     /* 浮動大頭貼翅膀 / 星星 */
     @keyframes floatSparkle {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -177,7 +166,7 @@
           <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=NekoCraft&backgroundColor=ffb7b2" alt="個人大頭貼" class="w-full h-full object-cover">
         </div>
         <span class="absolute bottom-0 right-1 bg-macaron-yellow text-xs font-bold px-2 py-0.5 rounded-full border-2 border-white shadow">
-          LV.16 🐾
+          LV.16 MAX 👑
         </span>
       </div>
 
@@ -187,7 +176,7 @@
         <span class="text-pink-400 animate-bounce">🐾</span>
       </h1>
       <p class="text-stone-500 font-medium text-sm sm:text-base max-w-md bg-macaron-cream/80 px-4 py-1.5 rounded-full border border-orange-100">
-        ✨ 收集每一關的闖關寶石，成為獨當一面的網頁大師！ ✨
+        🎉 恭喜全數通關！成為獨當一面的網頁大師啦！ 🎉
       </p>
 
       <div class="w-full max-w-md mt-6 bg-orange-50 p-3.5 rounded-2xl border-2 border-orange-100">
@@ -196,154 +185,20 @@
             <i class="fa-solid fa-trophy text-amber-400"></i> 闖關進度
           </span>
           <span class="text-xs sm:text-sm font-bold text-pink-500 bg-pink-100 px-2.5 py-0.5 rounded-full">
-            4 / 16 關 🐾
+            16 / 16 關 👑
           </span>
         </div>
         <!-- 進度條軌道 -->
         <div class="w-full h-4 bg-stone-200/60 rounded-full overflow-hidden p-0.5 shadow-inner">
-          <div class="h-full bg-gradient-to-r from-macaron-pink to-macaron-yellow rounded-full transition-all duration-1000 ease-out relative" style="width: 25%;">
+          <div class="h-full bg-gradient-to-r from-macaron-pink via-macaron-yellow to-macaron-green rounded-full transition-all duration-1000 ease-out relative" style="width: 100%;">
             <div class="absolute right-0 top-0 bottom-0 w-2 bg-white/50 rounded-full"></div>
           </div>
         </div>
       </div>
     </header>
 
-    <section class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-
-      <!-- Week 1 (已解鎖) -->
-      <a href="w1/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 border-pink-200" onclick="createSparkles(event)">
-        <div class="absolute top-0 right-0 bg-macaron-pink text-white text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
-          UNLOCKED 🌟
-        </div>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-12 h-12 rounded-2xl bg-pink-100 text-pink-500 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
-            💳
-          </div>
-          <div>
-            <span class="text-xs font-bold text-pink-400 block tracking-wider">WEEK 01</span>
-            <h3 class="text-base font-bold text-stone-700 group-hover:text-pink-500 transition-colors">數位名片</h3>
-          </div>
-        </div>
-        <p class="text-xs text-stone-400 mb-4 line-clamp-1">打造屬於自己的第一張 Q 彈個人名片！</p>
-        <div class="flex justify-between items-center pt-2 border-t border-orange-50">
-          <span class="text-xs font-bold text-pink-500 flex items-center gap-1">
-            進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </span>
-          <span class="text-lg">✨</span>
-        </div>
-      </a>
-
-      <!-- Week 2 (已解鎖) -->
-      <a href="w2/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 border-amber-200" onclick="createSparkles(event)">
-        <div class="absolute top-0 right-0 bg-macaron-yellow text-stone-700 text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
-          UNLOCKED 🌟
-        </div>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-500 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
-            🍱
-          </div>
-          <div>
-            <span class="text-xs font-bold text-amber-500 block tracking-wider">WEEK 02</span>
-            <h3 class="text-base font-bold text-stone-700 group-hover:text-amber-600 transition-colors">今天吃甚麼?</h3>
-          </div>
-        </div>
-        <p class="text-xs text-stone-400 mb-4 line-clamp-1">選擇困難症救星！隨機午餐轉盤～</p>
-        <div class="flex justify-between items-center pt-2 border-t border-orange-50">
-          <span class="text-xs font-bold text-amber-600 flex items-center gap-1">
-            進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </span>
-          <span class="text-lg">🍣</span>
-        </div>
-      </a>
-
-      <!-- Week 3 (已解鎖) -->
-      <a href="w3/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 border-purple-200" onclick="createSparkles(event)">
-        <div class="absolute top-0 right-0 bg-macaron-purple text-purple-900 text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
-          UNLOCKED 🌟
-        </div>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-500 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
-            🤣
-          </div>
-          <div>
-            <span class="text-xs font-bold text-purple-400 block tracking-wider">WEEK 03</span>
-            <h3 class="text-base font-bold text-stone-700 group-hover:text-purple-600 transition-colors">迷因生成器</h3>
-          </div>
-        </div>
-        <p class="text-xs text-stone-400 mb-4 line-clamp-1">打造屬於你的搞笑喵喵迷因！</p>
-        <div class="flex justify-between items-center pt-2 border-t border-orange-50">
-          <span class="text-xs font-bold text-purple-500 flex items-center gap-1">
-            進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </span>
-          <span class="text-lg">😹</span>
-        </div>
-      </a>
-
-      <!-- Week 4 (已解鎖) -->
-      <a href="w4/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 border-emerald-200" onclick="createSparkles(event)">
-        <div class="absolute top-0 right-0 bg-macaron-green text-emerald-800 text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
-          UNLOCKED 🌟
-        </div>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-500 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
-            🤫
-          </div>
-          <div>
-            <span class="text-xs font-bold text-emerald-500 block tracking-wider">WEEK 04</span>
-            <h3 class="text-base font-bold text-stone-700 group-hover:text-emerald-600 transition-colors">悄悄話</h3>
-          </div>
-        </div>
-        <p class="text-xs text-stone-400 mb-4 line-clamp-1">寫下藏在心底的喵喵秘密與祝福～</p>
-        <div class="flex justify-between items-center pt-2 border-t border-orange-50">
-          <span class="text-xs font-bold text-emerald-600 flex items-center gap-1">
-            進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-          </span>
-          <span class="text-lg">💌</span>
-        </div>
-      </a>
-
-      <!-- 生成 Week 5 ~ 16 未解鎖關卡 -->
-      <script>
-        // 關卡標題範例，讓整體更有故事感
-        const weekTitles = [
-          "Week 5 - 可愛計算機 🧮", "Week 6 - 天氣小包包 ☁️", "Week 7 - 喵喵畫板 🎨",
-          "Week 8 - 音樂隨身聽 🎵", "Week 9 - 記憶對對碰 🃏", "Week 10 - 電影搜尋器 🎬",
-          "Week 11 - 貪吃蛇大冒險 🐍", "Week 12 - 秘密日記本 📖", "Week 13 - 購物小車車 🛒",
-          "Week 14 - 冒險地圖 🗺️", "Week 15 - 幸福計時器 ⏳", "Week 16 - 終極大魔王 🏰"
-        ];
-
-        for (let i = 5; i <= 16; i++) {
-          const title = weekTitles[i - 5] || `Week ${i} - 未知關卡`;
-          document.write(`
-            <div class="group relative clay-card p-5 shadow-clay-locked opacity-75 hover:opacity-100 transition-all duration-200 wiggle-hover cursor-not-allowed border-2 border-dashed border-stone-200 flex flex-col justify-between">
-              
-              <!-- Hover 提示 Tooltip -->
-              <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-stone-700 text-white text-xs px-3 py-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 flex items-center gap-1">
-                <span>🔑 尚未解鎖呦！</span>
-                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-700"></div>
-              </div>
-
-              <div class="flex items-center gap-3 mb-3">
-                <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-400 flex items-center justify-center text-xl shadow-inner">
-                  🔒
-                </div>
-                <div>
-                  <span class="text-xs font-bold text-stone-400 block tracking-wider">WEEK ${i < 10 ? '0' + i : i}</span>
-                  <h3 class="text-base font-bold text-stone-500">${title.split(' - ')[1]}</h3>
-                </div>
-              </div>
-              <p class="text-xs text-stone-400 mb-4">努力修建中，敬請期待喵～</p>
-              <div class="flex justify-between items-center pt-2 border-t border-stone-100">
-                <span class="text-xs font-bold text-stone-400 flex items-center gap-1">
-                  <i class="fa-solid fa-lock text-xs"></i> 鎖定中
-                </span>
-                <span class="text-xs text-stone-300 font-mono">LOCKED</span>
-              </div>
-            </div>
-          `);
-        }
-      </script>
-
+    <section id="levels-grid" class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+      <!-- 16 個全解鎖關卡由下方 Script 統一渲染 -->
     </section>
   </main>
 
@@ -355,6 +210,62 @@
   </footer>
 
   <script>
+    const levels = [
+      { week: 1, title: "數位名片", icon: "💳", badgeEmoji: "✨", desc: "打造屬於自己的第一張 Q 彈個人名片！" },
+      { week: 2, title: "今天吃甚麼?", icon: "🍱", badgeEmoji: "🍣", desc: "選擇困難症救星！隨機午餐轉盤～" },
+      { week: 3, title: "迷因生成器", icon: "🤣", badgeEmoji: "😹", desc: "打造屬於你的搞笑喵喵迷因！" },
+      { week: 4, title: "悄悄話", icon: "🤫", badgeEmoji: "💌", desc: "寫下藏在心底的喵喵秘密與祝福～" },
+      { week: 5, title: "雲端心電感應 - 多人默契遊戲", icon: "☁️", badgeEmoji: "💞", desc: "即時連線大考驗，測測你們的心靈默契！" },
+      { week: 6, title: "天氣小包包", icon: "🌤️", badgeEmoji: "🌈", desc: "出門前先讓喵喵幫你看看今天天氣～" },
+      { week: 7, title: "喵喵畫板", icon: "🎨", badgeEmoji: "🖌️", desc: "盡情揮灑色彩的夢幻隨手塗鴉板！" },
+      { week: 8, title: "音樂隨身聽", icon: "🎵", badgeEmoji: "🎧", desc: "戴上耳機，享受專屬喵喵的療癒旋律！" },
+      { week: 9, title: "記憶對對碰", icon: "🃏", badgeEmoji: "🐾", desc: "考驗眼力與記憶力的翻牌大挑戰！" },
+      { week: 10, title: "電影搜尋器", icon: "🎬", badgeEmoji: "🍿", desc: "尋找今晚最適合配爆米花的好電影！" },
+      { week: 11, title: "貪吃蛇大冒險", icon: "🐍", badgeEmoji: "🍎", desc: "方向鍵控制，挑戰吃掉最多小點心！" },
+      { week: 12, title: "秘密日記本", icon: "📖", badgeEmoji: "✒️", desc: "記錄每天的小確幸與修練心得～" },
+      { week: 13, title: "購物小車車", icon: "🛒", badgeEmoji: "🛍️", desc: "把喜歡的罐罐通通放進購物車吧！" },
+      { week: 14, title: "冒險地圖", icon: "🗺️", badgeEmoji: "🧭", desc: "標記足跡，探索未知的前端新大陸！" },
+      { week: 15, title: "幸福計時器", icon: "⏳", badgeEmoji: "🍅", desc: "專注學習與休息的完美番茄鐘節奏！" },
+      { week: 16, title: "終極大魔王", icon: "🏰", badgeEmoji: "👑", desc: "集結所有修練成果的最終畢業作品！" }
+    ];
+
+    const themes = [
+      { border: "border-pink-200", badge: "bg-macaron-pink text-white", iconBg: "bg-pink-100 text-pink-500", weekText: "text-pink-400", hoverText: "group-hover:text-pink-500", linkText: "text-pink-500" },
+      { border: "border-amber-200", badge: "bg-macaron-yellow text-stone-700", iconBg: "bg-amber-100 text-amber-500", weekText: "text-amber-500", hoverText: "group-hover:text-amber-600", linkText: "text-amber-600" },
+      { border: "border-purple-200", badge: "bg-macaron-purple text-purple-900", iconBg: "bg-purple-100 text-purple-500", weekText: "text-purple-400", hoverText: "group-hover:text-purple-600", linkText: "text-purple-500" },
+      { border: "border-emerald-200", badge: "bg-macaron-green text-emerald-800", iconBg: "bg-emerald-100 text-emerald-500", weekText: "text-emerald-500", hoverText: "group-hover:text-emerald-600", linkText: "text-emerald-600" },
+      { border: "border-sky-200", badge: "bg-macaron-blue text-sky-900", iconBg: "bg-sky-100 text-sky-500", weekText: "text-sky-500", hoverText: "group-hover:text-sky-600", linkText: "text-sky-600" }
+    ];
+
+    const grid = document.getElementById('levels-grid');
+    grid.innerHTML = levels.map((item, idx) => {
+      const t = themes[idx % themes.length];
+      const weekStr = item.week < 10 ? `0${item.week}` : item.week;
+      return `
+        <a href="w${item.week}/index.html" class="group relative clay-card p-5 shadow-clay hover:shadow-clay-active transition-all duration-300 transform hover:-translate-y-1.5 jelly-hover flex flex-col justify-between overflow-hidden border-2 ${t.border}" onclick="createSparkles(event)">
+          <div class="absolute top-0 right-0 ${t.badge} text-xs font-bold px-3 py-1 rounded-bl-xl shadow-sm">
+            UNLOCKED 🌟
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-12 h-12 shrink-0 rounded-2xl ${t.iconBg} flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition-transform">
+              ${item.icon}
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs font-bold ${t.weekText} block tracking-wider">WEEK ${weekStr}</span>
+              <h3 class="text-base font-bold text-stone-700 ${t.hoverText} transition-colors leading-snug">${item.title}</h3>
+            </div>
+          </div>
+          <p class="text-xs text-stone-400 mb-4 line-clamp-1">${item.desc}</p>
+          <div class="flex justify-between items-center pt-2 border-t border-orange-50">
+            <span class="text-xs font-bold ${t.linkText} flex items-center gap-1">
+              進入關卡 <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+            </span>
+            <span class="text-lg">${item.badgeEmoji}</span>
+          </div>
+        </a>
+      `;
+    }).join('');
+
     // 點擊解鎖按鈕時飄出愛心與星光
     function createSparkles(e) {
       const sparkles = ['✨', '💖', '🌸', '⭐', '🐾'];
